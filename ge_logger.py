@@ -25,6 +25,32 @@ def fetch_snapshot() -> dict:
     resp.raise_for_status()
     return resp.json()
 
+def fetch_1h_if_due() -> None:
+    # Round current time down to the hour (e.g., 14:23 → 14:00 → 1716127200)
+    ts_hour = int(time.time() // 3600 * 3600)
+    out_file = DATA_DIR / f"1h-{ts_hour}.json"
+
+    if out_file.exists():
+        # Already have this hour's file → nothing to do
+        return
+
+    url = "https://prices.runescape.wiki/api/v1/osrs/1h"
+    resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=10)
+    resp.raise_for_status()
+
+    out_file.write_text(json.dumps(resp.json(), separators=(",", ":")))
+    print(f"[+] saved hourly snapshot → {out_file.name}")
+
+def fetch_mapping_if_due() -> None:
+    out_file = DATA_DIR / "mapping.json"
+    # If file doesn’t exist OR is older than 24 h → refresh
+    if (not out_file.exists()) or (time.time() - out_file.stat().st_mtime > 86_400):
+        url = "https://prices.runescape.wiki/api/v1/osrs/mapping"
+        resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=10)
+        resp.raise_for_status()
+        out_file.write_text(json.dumps(resp.json(), separators=(",", ":")))
+        print(f"[+] refreshed item mapping → {out_file.name}")
+
 def append_log(payload: dict) -> None:
     today_fname = DATA_DIR / f"{dt.date.today()}.jsonl"
     with today_fname.open("a") as f:
@@ -45,6 +71,8 @@ def purge_old_logs() -> None:
 def main() -> None:
     data = fetch_snapshot()        # { "data": {item_id: {...}, ...}, "timestamp": ... }
     append_log(data)
+    fetch_1h_if_due()
+    fetch_mapping_if_due()
     purge_old_logs()
 
 if __name__ == "__main__":
