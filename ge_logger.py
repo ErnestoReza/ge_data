@@ -13,9 +13,9 @@ from pathlib import Path
 
 # --- Config ---------------------------------------------------------------
 BASE_URL   = "https://prices.runescape.wiki/api/v1/osrs/5m"
-REPO_DIR = Path(__file__).resolve().parent        # folder that holds ge_logger.py
-DATA_DIR = REPO_DIR / "data"                      # …/data   ← all JSON goes here
-KEEP_DAYS  = 7                               # retain this many daily files
+REPO_DIR = Path(__file__).resolve().parent
+DATA_DIR = REPO_DIR / "data"
+KEEP_DAYS  = 7
 USER_AGENT = "ernesto-ge-log/1.0"
 # --------------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ def fetch_1h_if_due() -> None:
 
 def fetch_mapping() -> None:
     out_file = DATA_DIR / "mapping.json"
-    # If file doesn’t exist OR is older than 24 h → refresh
+    # refresh if file doesn’t exist OR is older than 24 h
     if (not out_file.exists()) or (time.time() - out_file.stat().st_mtime > 86_400):
         url = "https://prices.runescape.wiki/api/v1/osrs/mapping"
         resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=10)
