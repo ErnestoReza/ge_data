@@ -13,7 +13,8 @@ from pathlib import Path
 
 # --- Config ---------------------------------------------------------------
 BASE_URL   = "https://prices.runescape.wiki/api/v1/osrs/5m"
-DATA_DIR   = Path("/home/ernesto/ge_logs")   # change to wherever you like
+REPO_DIR = Path(__file__).resolve().parent        # folder that holds ge_logger.py
+DATA_DIR = REPO_DIR / "data"                      # …/data   ← all JSON goes here
 KEEP_DAYS  = 7                               # retain this many daily files
 USER_AGENT = "ernesto-ge-log/1.0"
 # --------------------------------------------------------------------------
