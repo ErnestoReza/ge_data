@@ -60,7 +60,7 @@ def fetch_mapping() -> None:
         print(f"[+] refreshed item mapping → {out_file.name}")
 
 def append_log(payload: dict) -> None:
-    today_fname = DATA_DIR / f"{dt.date.today()}.jsonl"
+    today_fname = DATA_DIR / f"5m-{dt.date.today()}.jsonl"
     with today_fname.open("a") as f:
         f.write(json.dumps(payload, separators=(",", ":")) + "\n")
     print(f"[+] appended snapshot to {today_fname}")
